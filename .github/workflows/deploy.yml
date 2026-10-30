@@ -31,7 +31,7 @@ jobs:
           path: dist
 
   deploy:
-    if: ${{ vars.DATA_TERMS_CONFIRMED == 'true' }}
+    if: ${{ vars.PUBLICATION_APPROVED == 'true' }}
     needs: build
     runs-on: ubuntu-latest
     permissions:
