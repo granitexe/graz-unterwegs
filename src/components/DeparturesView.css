@@ -1,0 +1,21 @@
+.departures-layout, .departures-pane { min-width: 0; }
+.departures-pane { color: var(--md-on-surface); }
+.departures-pane h1 { margin: 0 0 16px; font-size: 1.25rem; }
+.departures-pane h2 { font-size: 1rem; margin: 16px 0 8px; overflow-wrap: anywhere; }
+.departures-pane button { min-height: 48px; max-width: 100%; padding: 8px 16px; border: 1px solid var(--md-outline-variant); border-radius: 24px; background: var(--md-secondary-container); color: var(--md-on-secondary-container); font: inherit; font-weight: 500; cursor: pointer; overflow-wrap: anywhere; }
+.departures-pane button:focus-visible, .departure-filters summary:focus-visible { outline: 3px solid var(--md-primary); outline-offset: 2px; }
+.departures-pane button:disabled { opacity: .55; cursor: default; }
+.departure-filters { margin-block: 16px; border: 1px solid var(--md-outline-variant); border-radius: 16px; background: var(--md-surface-container); }
+.departure-filters summary { min-height: 48px; padding: 12px 16px; cursor: pointer; font-weight: 500; }
+.departure-filters__content { display: grid; gap: 12px; padding: 0 16px 16px; }
+.departure-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.departure-chips button { background: var(--md-surface); color: var(--md-on-surface); }
+.departure-chips button[aria-pressed='true'] { background: var(--md-secondary-container); color: var(--md-on-secondary-container); border-color: var(--md-primary); }
+.departure-group { margin-block: 16px; }
+.departures-pane .departure-row { display: grid; width: 100%; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; text-align: left; border: 0; border-bottom: 1px solid var(--md-outline-variant); border-radius: 0; background: transparent; color: var(--md-on-surface); padding: 8px; }
+.departures-pane .departure-row[aria-pressed='true'] { background: var(--md-primary-container); color: var(--md-on-primary-container); }
+.departure-row > strong { padding: 4px 8px; border-radius: 8px; background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+.departure-row small { display: block; color: var(--md-on-surface-variant); }
+.departure-detail { margin-top: 16px; padding: 16px; border: 1px solid var(--md-outline-variant); border-radius: 16px; background: var(--md-surface-container); overflow-wrap: anywhere; }
+.departure-detail ol { padding-inline-start: 24px; }
+.departure-detail li { padding-block: 4px; }

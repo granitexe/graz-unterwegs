@@ -1,0 +1,10 @@
+Roboto font
+Copyright 2011 The Roboto Project Authors. Distributed under the SIL Open Font License, Version 1.1; see ROBOTO-LICENSE.
+Source: https://github.com/google/fonts/tree/main/ofl/roboto
+
+Material Symbols and Material Icons
+Copyright Google. Distributed under the Apache License, Version 2.0; see icons/LICENSE.
+Source: https://github.com/google/material-design-icons
+The gps_fixed asset is from Material Icons; the remaining assets are Material Symbols.
+
+Map and timetable data are not covered by the application's MIT license. See the About view for source attribution and the outstanding public-release terms.

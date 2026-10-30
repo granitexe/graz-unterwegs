@@ -1,0 +1,21 @@
+.journey-search, .journey-search form, .journey-results, .journey-results-list { display: grid; gap: 16px; min-width: 0; }
+.journey-search__fields { display: grid; gap: 8px; padding: 16px; border: 1px solid var(--md-outline-variant); border-radius: 16px; background: var(--md-surface-container); }
+.journey-search__endpoint { display: flex; gap: 8px; align-items: flex-start; min-width: 0; }
+.journey-search__endpoint > :last-child { flex: 1; min-width: 0; }
+.journey-search__letter { display: grid; place-items: center; flex: 0 0 24px; height: 24px; margin-top: 32px; border-radius: 50%; background: var(--md-primary-container); color: var(--md-on-primary-container); font-size: .875rem; font-weight: 700; }
+.journey-search button, .journey-results > button { min-height: 48px; border: 1px solid var(--md-outline-variant); border-radius: 24px; padding: 8px 16px; background: var(--md-secondary-container); color: var(--md-on-secondary-container); font: inherit; font-weight: 500; cursor: pointer; }
+.journey-search .journey-search__swap { justify-self: end; display: grid; place-items: center; width: 48px; min-width: 48px; padding: 0; }
+.journey-search .journey-search__submit { width: 100%; background: var(--md-primary); color: var(--md-on-primary); border-color: transparent; }
+.journey-search button:disabled, .journey-results button:disabled { opacity: .55; cursor: default; }
+.journey-search button:focus-visible, .journey-results button:focus-visible { outline: 3px solid var(--md-primary); outline-offset: 2px; }
+.journey-results { margin-top: 8px; }
+.journey-result { border: 1px solid var(--md-outline-variant); border-radius: 16px; background: var(--md-surface-container); }
+.journey-result-select { width: 100%; min-height: 48px; padding: 16px; display: grid; gap: 8px; text-align: left; color: var(--md-on-surface); background: transparent; border: 0; border-radius: inherit; cursor: pointer; font: inherit; }
+.journey-result-select:hover { background: var(--md-surface-container-high); }
+.journey-result-times { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.journey-result-times strong { font-size: 1.125rem; }
+.journey-result-legs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.journey-result-leg { display: inline-flex; gap: 4px; align-items: center; font-size: .875rem; }
+.journey-result-leg strong { padding: 4px 8px; border-radius: 8px; background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+.journey-result-arrow, .journey-result-provenance, .journey-result-summary { color: var(--md-on-surface-variant); font-size: .875rem; }
+.journey-result-provenance { order: 4; }

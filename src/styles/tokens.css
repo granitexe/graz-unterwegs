@@ -1,0 +1,55 @@
+:root {
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  color-scheme: light dark;
+  --md-primary: #006b5e;
+  --md-on-primary: #ffffff;
+  --md-primary-container: #77f8df;
+  --md-on-primary-container: #00201b;
+  --md-surface: #f4fbf7;
+  --md-on-surface: #161d1a;
+  --md-surface-variant: #dae5df;
+  --md-on-surface-variant: #3f4945;
+  --md-surface-container: #f0f5f1;
+  --md-surface-container-high: #eaf0eb;
+  --md-outline: #6f7974;
+  --md-outline-variant: #bec9c2;
+  --md-secondary-container: #cce8dd;
+  --md-on-secondary-container: #092017;
+  --md-error: #ba1a1a;
+  --md-error-container: #ffdad6;
+  --md-on-error-container: #410002;
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --md-primary: #53dbc3;
+    --md-on-primary: #00382f;
+    --md-primary-container: #005045;
+    --md-on-primary-container: #77f8df;
+    --md-surface: #101512;
+    --md-on-surface: #dfe4df;
+    --md-surface-variant: #3f4945;
+    --md-on-surface-variant: #bec9c2;
+    --md-surface-container: #191e1b;
+    --md-surface-container-high: #292f2b;
+    --md-outline: #89938d;
+    --md-outline-variant: #3f4945;
+    --md-secondary-container: #354b42;
+    --md-on-secondary-container: #cce8dd;
+    --md-error: #ffb4ab;
+    --md-error-container: #93000a;
+    --md-on-error-container: #ffdad6;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, input, select, textarea { font: inherit; }
+button { min-height: 48px; border: 1px solid var(--md-outline-variant); border-radius: 24px; padding: 0 16px; background: var(--md-surface-container-high); color: var(--md-on-surface); cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+a { color: var(--md-primary); }
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 3px solid var(--md-primary); outline-offset: 3px; }
+.icon { display: inline-block; width: 24px; height: 24px; flex: 0 0 24px; background-color: currentColor; mask-size: contain; mask-position: center; mask-repeat: no-repeat; -webkit-mask-size: contain; -webkit-mask-position: center; -webkit-mask-repeat: no-repeat; }
