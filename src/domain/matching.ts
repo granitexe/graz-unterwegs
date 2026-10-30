@@ -111,7 +111,12 @@ export function matchVehicle(leg: TransitLeg, trip: TransitTrip, observations: r
     if (vehicle.mode !== leg.mode || positionStatus(vehicle.observedAt, nowMs) !== 'fresh' || !vehicle.lineDisplay || lineName(vehicle.lineDisplay) !== route || !vehicle.targetName || !targets.includes(targetName(vehicle.targetName))) continue
     if (!Number.isFinite(vehicle.coordinate.lat) || !Number.isFinite(vehicle.coordinate.lon)) continue
     if (!geometry || !stops) { uncertain.push(vehicle.id); continue }
-    const near = distinct(projections(geometry, [vehicle.coordinate.lon, vehicle.coordinate.lat]).filter(p => p.distance <= 100))
+    const projected = projections(geometry, [vehicle.coordinate.lon, vehicle.coordinate.lat])
+    // Adjacent short segments project to their endpoints; those are not separate
+    // route occurrences unless they are local minima along the geometry.
+    const near = distinct(projected.filter((p, index) => p.distance <= 100
+      && (index === 0 || p.distance <= projected[index - 1].distance)
+      && (index === projected.length - 1 || p.distance <= projected[index + 1].distance)))
     if (!near.length) continue
     let unknown = false
     const passing = near.filter(p => {

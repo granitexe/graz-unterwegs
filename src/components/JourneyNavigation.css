@@ -2,7 +2,16 @@
 .journey-navigation button { min-height: 48px; max-width: 100%; padding: 8px 16px; border: 1px solid var(--md-outline-variant); border-radius: 24px; background: var(--md-secondary-container); color: var(--md-on-secondary-container); font: inherit; font-weight: 500; white-space: normal; cursor: pointer; }
 .journey-navigation button:focus-visible, .journey-navigation summary:focus-visible { outline: 3px solid var(--md-primary); outline-offset: 2px; }
 .journey-navigation__header h2 { margin: 8px 0 16px; font-size: 1.25rem; }
-.journey-navigation__header button { padding-inline: 0; border: 0; background: transparent; color: var(--md-primary); }
+.journey-navigation .journey-navigation__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 8px 12px;
+  border: 1px solid var(--md-outline-variant);
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface);
+}
+.journey-navigation .journey-navigation__back:hover { background: var(--md-secondary-container); }
 .journey-summary { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; }
 .journey-summary strong { font-size: 1.6rem; }
 .journey-summary div { flex-basis: 100%; }

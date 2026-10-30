@@ -74,7 +74,7 @@ export default function TransitMap(props: TransitMapProps) {
   const badgeRef = useRef<HTMLButtonElement>(null)
   const stopRef = useRef<HTMLDivElement>(null)
   const [vehiclePlacement, setVehiclePlacement] = useState<{ x: number; y: number; angleDeg: number; edge: boolean } | null>(null)
-  const [stopCallout, setStopCallout] = useState<{ label: string; x: number; y: number } | null>(null)
+  const [stopCallout, setStopCallout] = useState<{ label: string; x: number; y: number; pinned: boolean } | null>(null)
   const [stopHeight, setStopHeight] = useState(64)
   const latest = useRef(props)
   latest.current = props
@@ -129,6 +129,7 @@ export default function TransitMap(props: TransitMapProps) {
       add({ id: 'stop-circles', type: 'circle', source: 'stops', filter: ['any', ['boolean', ['get', 'board'], false], ['boolean', ['get', 'alight'], false]], paint: { 'circle-radius': ['case', ['boolean', ['get', 'transfer'], false], 7, 5], 'circle-color': '#ffffff', 'circle-stroke-color': '#006b5e', 'circle-stroke-width': 2 } })
       add({ id: 'intermediate-circles', type: 'circle', source: 'stops', filter: ['all', ['boolean', ['get', 'intermediate'], false], ['!', ['boolean', ['get', 'board'], false]], ['!', ['boolean', ['get', 'alight'], false]]], paint: { 'circle-radius': 4, 'circle-color': '#ffffff', 'circle-stroke-color': '#006b5e', 'circle-stroke-width': 2 } })
       add({ id: 'stop-labels', type: 'symbol', source: 'stops', minzoom: 14, layout: { 'text-field': ['concat', ['case', ['boolean', ['get', 'transfer'], false], '⇄ ', ''], ['get', 'label']], 'text-size': 12, 'text-offset': [0, 1], 'text-anchor': 'top', 'text-optional': true }, paint: { 'text-color': '#17332e', 'text-halo-color': '#ffffff', 'text-halo-width': 2 } })
+      add({ id: 'stop-hit-target', type: 'circle', source: 'stops', paint: { 'circle-radius': 22, 'circle-color': '#000000', 'circle-opacity': 0.001 } })
       add({ id: 'endpoint-circles', type: 'circle', source: 'endpoints', paint: { 'circle-radius': 12, 'circle-color': '#006b5e', 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 2 } })
       add({ id: 'endpoint-labels', type: 'symbol', source: 'endpoints', layout: { 'text-field': ['get', 'letter'], 'text-size': 12, 'text-allow-overlap': true }, paint: { 'text-color': '#ffffff' } })
       add({ id: 'endpoint-names', type: 'symbol', source: 'endpoints', layout: { 'text-field': ['get', 'label'], 'text-size': 12, 'text-offset': [0, 1.5], 'text-anchor': 'top', 'text-optional': true }, paint: { 'text-color': '#17332e', 'text-halo-color': '#ffffff', 'text-halo-width': 2 } })
@@ -146,21 +147,35 @@ export default function TransitMap(props: TransitMapProps) {
     map.on('dragstart', userMove)
     map.on('zoomstart', userMove)
     const select = (event: maplibregl.MapLayerMouseEvent) => {
-      const stopLayers = ['stop-circles', 'intermediate-circles'].filter(id => map.getLayer(id))
+      const stopLayers = ['stop-hit-target'].filter(id => map.getLayer(id))
       if (stopLayers.length && map.queryRenderedFeatures(event.point, { layers: stopLayers }).length) return
       const index = event.features?.[0]?.properties?.legIndex
       if (typeof index === 'number') latest.current.onSelectLeg(index)
     }
     map.on('click', 'route-transit', select)
     map.on('click', 'route-walk', select)
-    const showStop = (event: maplibregl.MapLayerMouseEvent) => {
-      const label = event.features?.[0]?.properties?.label
-      if (typeof label === 'string') setStopCallout({ label, x: event.point.x, y: event.point.y })
+    const showStop = (event: maplibregl.MapLayerMouseEvent, pinned: boolean) => {
+      let label: string | undefined
+      let distance = Infinity
+      for (const feature of event.features ?? []) {
+        if (feature.geometry.type !== 'Point' || typeof feature.properties?.label !== 'string') continue
+        const position = map.project(feature.geometry.coordinates as [number, number])
+        const delta = Math.hypot(position.x - event.point.x, position.y - event.point.y)
+        if (delta < distance) { distance = delta; label = feature.properties.label }
+      }
+      if (label === undefined) return
+      setStopCallout(current => !pinned && current?.pinned ? current : { label: label!, x: event.point.x, y: event.point.y, pinned })
     }
-    map.on('click', 'stop-circles', showStop)
-    map.on('click', 'intermediate-circles', showStop)
+    const hoverStop = (event: maplibregl.MapLayerMouseEvent) => {
+      if (window.matchMedia('(hover: hover)').matches) showStop(event, false)
+    }
+    const leaveStop = () => setStopCallout(current => current?.pinned ? current : null)
+    const clickStop = (event: maplibregl.MapLayerMouseEvent) => showStop(event, true)
+    map.on('mousemove', 'stop-hit-target', hoverStop)
+    map.on('mouseleave', 'stop-hit-target', leaveStop)
+    map.on('click', 'stop-hit-target', clickStop)
     map.on('click', event => {
-      const layers = ['stop-circles', 'intermediate-circles'].filter(id => map.getLayer(id))
+      const layers = ['stop-hit-target'].filter(id => map.getLayer(id))
       if (!layers.length || !map.queryRenderedFeatures(event.point, { layers }).length) setStopCallout(null)
     })
     return () => { mapRef.current = null; map.remove() }
@@ -354,6 +369,6 @@ export default function TransitMap(props: TransitMapProps) {
       <button type="button" onClick={locate} title={locationLabel} aria-label={locationLabel} aria-pressed={cameraMode === 'follow-user'} disabled={locationStatus === 'locating'}><Icon name="my_location" /> <span className="transit-map__control-label">{locationLabel}</span></button>
     </div>}
     {primary && <button ref={badgeRef} className={`transit-map__vehicle${vehiclePlacement?.edge ? ' transit-map__vehicle--edge' : ''}`} type="button" onClick={centerOnPrimary} title={`${translate(locale, vehiclePlacement?.edge ? 'showLivePosition' : scene.vehicleSelection === 'pinned' ? 'selectedObservation' : 'likelyVehicle')} · ${primary.lineDisplay} → ${primary.targetName} · ${Math.max(0, Math.floor((scene.observationNowMs - primary.observedAt) / 1000))} s`} aria-label={`${translate(locale, vehiclePlacement?.edge ? 'showLivePosition' : scene.vehicleSelection === 'pinned' ? 'selectedObservation' : 'likelyVehicle')} · ${primary.lineDisplay} → ${primary.targetName} · ${Math.max(0, Math.floor((scene.observationNowMs - primary.observedAt) / 1000))} s`} style={{ left: vehiclePlacement?.x ?? 0, top: vehiclePlacement?.y ?? 0, visibility: vehiclePlacement && showFloating ? 'visible' : 'hidden' }}><Icon name={primary.mode === 'TRAM' ? 'tram' : 'directions_bus'} /><strong>{primary.lineDisplay}</strong><span className="transit-map__vehicle-arrow" style={{ transform: `rotate(${vehiclePlacement?.angleDeg ?? 0}deg)`, visibility: vehiclePlacement?.edge ? 'visible' : 'hidden' }}><Icon name="navigation" /></span></button>}
-    {stopCallout && showFloating && <div ref={stopRef} className="transit-map__stop-callout" style={{ maxWidth: freeWidth - 16, maxHeight: freeHeight - 16, left: Math.max(inset.left + 8, Math.min(stopCallout.x, width - inset.right - Math.min(240, freeWidth - 16) - 8)), top: Math.max(inset.top + 8, Math.min(stopCallout.y, height - inset.bottom - stopHeight - 8)) }}><strong>{stopCallout.label}</strong><button type="button" onClick={() => setStopCallout(null)}>{translate(locale, 'close')}</button></div>}
+    {stopCallout && showFloating && <div ref={stopRef} role={stopCallout.pinned ? 'status' : 'tooltip'} className={`transit-map__stop-callout${stopCallout.pinned ? '' : ' transit-map__stop-callout--hover'}`} style={{ maxWidth: freeWidth - 16, maxHeight: freeHeight - 16, left: Math.max(inset.left + 8, Math.min(stopCallout.x, width - inset.right - Math.min(240, freeWidth - 16) - 8)), top: Math.max(inset.top + 8, Math.min(stopCallout.y, height - inset.bottom - stopHeight - 8)) }}><strong>{stopCallout.label}</strong>{stopCallout.pinned && <button type="button" onClick={() => setStopCallout(null)}>{translate(locale, 'close')}</button>}</div>}
   </section>
 }

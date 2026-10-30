@@ -63,9 +63,11 @@ export function PlaceSearch({ label, locale, value, onChange, searchPlaces, mode
 
   useEffect(() => {
     const request = ++generation.current
-    if (!enabled || value || text.trim().length < 2) {
-      setChoices([])
+    setChoices([])
+    setActive(-1)
+    if (!enabled || value || !text.trim()) {
       setLoading(false)
+      setMessage(null)
       return
     }
     if (retryAt > Date.now()) {

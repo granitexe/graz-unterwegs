@@ -50,7 +50,7 @@ describe('unified place search', () => {
       expect(params.get('numResults')).toBe('20')
       expect(params.get('language')).toBe('de')
       const stop = params.get('type') === 'STOP'
-      expect(params.get('text')).toBe(stop ? 'korosistrasse 48' : 'korosistrasse 48, Graz')
+      expect(params.get('text')).toBe(stop ? 'Graz korosistrasse 48' : 'korosistrasse 48')
       return new Response(JSON.stringify(stop ? [
         { type: 'STOP', id: 'platform-a', name: 'Körösistraße', lat: 47.07, lon: 15.44 },
         { type: 'STOP', id: 'platform-b', name: 'Körösistraße', lat: 47.07, lon: 15.44 },
@@ -74,6 +74,31 @@ describe('unified place search', () => {
     expect(result.choices.find(choice => choice.kind === 'ADDRESS' && choice.name === 'Körösistraße')?.houseNumber).toBeUndefined()
     await searchPlaces('korosistrasse 48', 'ADDRESS', 'de', signal)
     expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('searches partial stop and address names without losing autocomplete results', async () => {
+    const fetchMock = vi.fn(async (url: string | URL | Request) => {
+      const params = new URL(String(url)).searchParams
+      const query = params.get('text')
+      const kind = params.get('type')
+      expect(params.get('language')).toBe('de')
+      if (kind === 'STOP' && (query === 'Graz Haup' || query === 'Graz H')) return new Response(JSON.stringify([
+        { type: 'STOP', id: 'hauptplatz', name: 'Graz Hauptplatz/Congress', lat: 47.071, lon: 15.438 },
+        { type: 'STOP', id: 'outside', name: 'Graz-Umgebung Hauptplatz', lat: 48, lon: 16 },
+      ]))
+      if (kind === 'ADDRESS' && query === 'Haup') return new Response(JSON.stringify([
+        { type: 'ADDRESS', name: 'Hauptplatz', lat: 47.0703, lon: 15.438 },
+      ]))
+      return new Response('[]')
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    const signal = new AbortController().signal
+    const result = await searchPlaces('Haup', 'ALL', 'de', signal)
+    expect(result.choices.map(choice => choice.name)).toEqual(['Graz Hauptplatz/Congress', 'Hauptplatz'])
+    expect(result.incomplete).toBe(false)
+    await searchPlaces('Haup', 'ALL', 'de', signal)
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect((await searchPlaces('H', 'ALL', 'de', signal)).choices.map(choice => choice.name)).toEqual(['Graz Hauptplatz/Congress'])
   })
 
   it('returns partial results without caching failures', async () => {

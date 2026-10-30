@@ -103,6 +103,10 @@
   color: var(--md-on-surface);
   box-shadow: 0 2px 8px #0003;
 }
+.transit-map__stop-callout--hover {
+  width: max-content;
+  pointer-events: none;
+}
 .transit-map .maplibregl-ctrl-bottom-right, .transit-map .maplibregl-ctrl-bottom-left {
   bottom: var(--map-bottom-occlusion, 0px);
 }

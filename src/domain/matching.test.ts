@@ -23,6 +23,10 @@ describe('conservative vehicle matching', () => {
   it('identifies one compatible observation only as likely', () => {
     expect(matchVehicle(trip, trip, [observation], now)).toEqual({ kind: 'likely', vehicleId: 'vehicle' })
   })
+  it('does not mistake endpoints of nearby short geometry segments for separate vehicle occurrences', () => {
+    const dense: TransitTrip = { ...trip, legGeometry: { points: polyline.encode([[47.07, 15.42], [47.07, 15.43], [47.07045, 15.43065], [47.07, 15.4313], [47.07, 15.44]], 6), precision: 6, length: 5 } }
+    expect(matchVehicle(dense, dense, [observation], now)).toEqual({ kind: 'likely', vehicleId: 'vehicle' })
+  })
   it('rejects wrong direction, mode, line suffix, empty target and stale positions', () => {
     const variants: VehicleObservation[] = [
       { ...observation, id: 'direction', targetName: 'Hauptbahnhof' },

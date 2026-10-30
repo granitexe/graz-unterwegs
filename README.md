@@ -2,9 +2,9 @@
 
 An independent, bilingual Graz bus and tram journey planner with departures and observed vehicle positions. It is not affiliated with Graz Linien or OpenTrafficMap. Timetable predictions and vehicle observations are not guarantees: vehicle coverage can be absent, and a likely vehicle match is not a verified trip identity.
 
-Search combines stops and addresses within Graz; choose a suggestion explicitly before requesting a connection. Selecting a connection opens its full route and timetable immediately. Segment inspection and likely vehicle observations do not assert that a traveller has boarded. Location is optional, held only in memory, and followed only after an explicit request.
+Search combines stops and addresses within Graz and offers suggestions from the first character when the provider has matches; choose a suggestion explicitly before requesting a connection. Selecting a connection opens its full route and timetable immediately. Segment inspection and likely vehicle observations do not assert that a traveller has boarded. Location is optional, held only in memory, and followed only after an explicit request.
 
-The map shows known stops only between each selected boarding and alighting point. Live positions represent compatible observations, not confirmed vehicle identities; an ambiguous observation must be selected explicitly. The directional chip recentres the map once, while following a vehicle remains a separate action. Live positions and stop details may be unavailable without removing the itinerary.
+The map shows known stops only between each selected boarding and alighting point. Hover over a stop to see its name, or tap it on a touchscreen to keep the name open; the timeline remains available as a text list. Live positions represent compatible observations, not confirmed vehicle identities; an ambiguous observation must be selected explicitly. The directional chip recentres the map once, while following a vehicle remains a separate action. Live positions and stop details may be unavailable without removing the itinerary.
 
 ## Run locally
 

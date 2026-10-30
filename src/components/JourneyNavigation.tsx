@@ -9,6 +9,7 @@ import { translate } from '../i18n'
 import type { JourneyAction, JourneyState } from '../state/journey'
 import type { MapScene } from './TransitMap'
 import { JourneyTimeline } from './JourneyTimeline'
+import { Icon } from './Icon'
 import './JourneyNavigation.css'
 
 interface Props {
@@ -127,7 +128,7 @@ export default function JourneyNavigation({ state, onAction, query, locale, acti
   const lastLeg = journey.legs[journey.legs.length - 1]
   const endTime = lastLeg ? effectiveEventTime(lastLeg, 'arrival').timeMs : null
   return <section className="journey-navigation" aria-label={de ? 'Gewählte Verbindung' : 'Selected connection'}>
-    <header className="journey-navigation__header"><button type="button" onClick={onBack}>{de ? '← Ergebnisse' : '← Results'}</button><h2>{de ? 'Gewählte Verbindung' : 'Selected connection'}</h2></header>
+    <header className="journey-navigation__header"><button className="journey-navigation__back" type="button" onClick={onBack}><Icon name="arrow_back" /><span>{de ? 'Ergebnisse' : 'Results'}</span></button><h2>{de ? 'Gewählte Verbindung' : 'Selected connection'}</h2></header>
     <div className="journey-summary"><strong>{endTime !== null ? formatTimeWithDay(endTime, Date.parse(journey.startTime), locale) : '—'}</strong><span>{formatDuration(journey.duration, locale)}</span><div>{query.origin.name} → {query.destination.name}</div></div>
     <div className="journey-actions" aria-label={de ? 'Abschnitt auswählen' : 'Inspect a segment'}>
       <button type="button" aria-pressed={state.selectedLegIndex === null} onClick={() => onAction({ type: 'select-leg', index: null })}>{de ? 'Gesamte Route' : 'Whole route'}</button>

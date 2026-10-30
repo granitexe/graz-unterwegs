@@ -171,7 +171,10 @@ function cursors(value: RecordValue): Pick<JourneyPage, 'nextPageCursor' | 'prev
 const normalizeSearch = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/ß/g, 'ss').replace(/\s+/g, ' ').trim()
 
 async function searchSubtype(query: string, kind: PlaceKind, locale: Locale, signal: AbortSignal): Promise<PlaceSubtypeResult> {
-  const search = kind === 'ADDRESS' && !/\bgraz\b/i.test(query) ? `${query}, Graz` : query
+  // Stop names often start with Graz; MOTIS matches partial input more reliably
+  // with that prefix. Appending Graz to an unfinished address instead changes
+  // the last autocomplete token and can suppress the intended street.
+  const search = kind === 'STOP' && !/\bgraz\b/i.test(query) ? `Graz ${query}` : query
   const params = new URLSearchParams({
     text: search, type: kind, place: `${GRAZ_CENTER.lat},${GRAZ_CENTER.lon}`,
     min: '47.01099856381888,15.349171800035792', max: '47.135508816624096,15.535504642151956',
@@ -211,7 +214,7 @@ async function searchSubtype(query: string, kind: PlaceKind, locale: Locale, sig
 export async function searchPlaces(textQuery: string, mode: PlaceSearchMode, locale: Locale, signal: AbortSignal): Promise<PlaceSearchResult> {
   if (signal.aborted) throw signal.reason
   const query = textQuery.trim()
-  if (query.length < 2) return { choices: [], incomplete: false }
+  if (!query) return { choices: [], incomplete: false }
   const kinds: PlaceKind[] = mode === 'ALL' ? ['STOP', 'ADDRESS'] : [mode]
   const responses = await Promise.allSettled(kinds.map(kind => searchSubtype(query, kind, locale, signal)))
   if (signal.aborted) throw signal.reason
